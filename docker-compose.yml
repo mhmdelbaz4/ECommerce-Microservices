@@ -1,0 +1,29 @@
+name: ECommerce
+services:
+  catalog.api:
+    image: ${DOCKER_REGISTRY-}catalogapi
+    build:
+      context: .
+      dockerfile: services/catalog/Catalog.API/Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - catalogDb
+    environment:
+      - ASPNETCORE_URLS=http://+:8000
+      - DatabaseSettings__ConnectionString=mongodb://catalogDb:27017
+      - DatabaseSettings__DatabaseName=CatalogDb
+      - DatabaseSettings__ProductsCollection=Products
+      - DatabaseSettings__BrandsCollection=Brands
+      - DatabaseSettings__TypesCollection=Types
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  catalogDb:
+    image: mongo
+    container_name: catalogDb
+    volumes:
+     - catalogdata:/data/db
+    ports:
+      - "27017:27017"
+volumes:
+    catalogdata:
